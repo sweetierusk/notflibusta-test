@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\jobs\SendBookNotificationJob;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
@@ -185,14 +186,42 @@ class Book extends ActiveRecord
         }
     }
 
+    protected function queueBookNotification()
+    {
+        try {
+            if (Yii::$app->has('queue')) {
+                Yii::$app->queue->push(new \app\jobs\SendBookNotificationJob([
+                    'bookId' => $this->id,
+                    'bookName' => $this->book_name,
+                    'bookIsbn' => $this->isbn,
+                    'authorIds' => $this->authorIds,
+                ]));
+
+                Yii::info("Задание для SMS уведомлений о книге '{$this->book_name}' добавлено в очередь", 'sms_notifications');
+            }
+        } catch (\Exception $e) {
+            Yii::error("Ошибка добавления в очередь: " . $e->getMessage(), 'sms_notifications');
+        }
+    }
+
+
+
+// Обновите метод afterSave
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
 
         if ($this->authorIds !== null && is_array($this->authorIds)) {
             $this->saveAuthors();
+
+            // Только при создании новой книги (не при обновлении)
+            if ($insert && !empty($this->authorIds)) {
+                $this->queueBookNotification();
+            }
         }
     }
+
+
 
     protected function saveAuthors()
     {

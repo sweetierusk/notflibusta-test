@@ -6,10 +6,10 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'queue'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'components' => [
         'request' => [
@@ -40,7 +40,9 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'info'],
+                    'categories' => ['sms_notifications'],
+                    'logFile' => '@runtime/logs/sms_notifications.log',
                 ],
             ],
         ],
@@ -67,8 +69,21 @@ $config = [
                 'signup' => 'auth/signup',
                 'logout' => 'auth/logout',
                 'get-token' => 'auth/get-token',
+                'subscribe/subscribe' => 'subscribe/subscribe',
                 'error' => 'site/error',
             ],
+        ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'Redis-7.2',
+            'port' => 6379,
+            'database' => 0,
+        ],
+        'queue' => [
+            'class' => 'yii\queue\redis\Queue',
+            'redis' => 'redis', // ID компонента redis
+            'channel' => 'book_notifications', // Имя канала
+            'as log' => 'yii\queue\LogBehavior', // Логирование
         ],
     ],
     'params' => $params,

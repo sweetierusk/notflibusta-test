@@ -65,23 +65,35 @@ AppAsset::register($this);
         </div>
     </main>
 
-    <!-- Попап подписки -->
-    <div id="subscribe-popup" class="popup-overlay">
+    <div id="subscribe-popup" class="popup-overlay" style="display: none;">
         <div class="popup">
             <div class="popup-header">
                 <h3 class="popup-title">Подписаться на автора</h3>
                 <button class="close-popup" id="close-popup">&times;</button>
             </div>
             <form id="subscribe-form">
+                <!-- Поле author-id будет добавляться динамически -->
+
                 <div class="form-group">
                     <label for="author-name">Автор</label>
-                    <input type="text" id="author-name" readonly>
+                    <input type="text" id="author-name" readonly class="form-control">
                 </div>
+
                 <div class="form-group">
-                    <label for="phone">Номер телефона</label>
-                    <input type="tel" id="phone" placeholder="+7 (XXX) XXX-XX-XX" required>
+                    <label for="phone">Номер телефона *</label>
+                    <input type="tel"
+                           id="phone"
+                           name="phone"
+                           placeholder="+7 (999) 123-45-67"
+                           required
+                           class="form-control"
+                           pattern="\+?[0-9\s\-\(\)]+">
+                    <small class="text-muted">Только номер телефона</small>
                 </div>
-                <button type="submit" class="btn btn-success" style="width: 100%;">Подписаться</button>
+
+                <button type="submit" class="btn btn-success" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i> Отправить подписку
+                </button>
             </form>
         </div>
     </div>
