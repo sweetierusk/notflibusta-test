@@ -65,27 +65,4 @@ class SiteController extends Controller
             'totalAuthors' => count($reportData),
         ]);
     }
-
-    public function actionSubscribe()
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
-        $request = Yii::$app->request;
-        $authorId = $request->post('author_id');
-        $phone = $request->post('phone');
-
-        if (empty($authorId) || empty($phone)) {
-            return ['success' => false, 'message' => 'Заполните все поля'];
-        }
-
-        $phone = preg_replace('/\D/', '', $phone);
-        if (strlen($phone) < 10) {
-            return ['success' => false, 'message' => 'Некорректный номер телефона'];
-        }
-
-        return [
-            'success' => true,
-            'message' => 'Вы успешно подписались на обновления автора'
-        ];
-    }
 }
